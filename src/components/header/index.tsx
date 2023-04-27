@@ -45,7 +45,12 @@ export const Header: React.FC = () => {
           <Avatar size={16} src={`/images/flags/${lang}.svg`} />
         </span>
       ),
-      label: lang === "en" ? "English" : "German",
+      label: lang === "en"
+          ? "English"
+          : lang === "de"
+              ? "German"
+              : "Русский"
+        ,
     }));
 
   return (
@@ -69,7 +74,11 @@ export const Header: React.FC = () => {
           <Button type="text">
             <Space>
               <Avatar size={16} src={`/images/flags/${currentLocale}.svg`} />
-              {currentLocale === "en" ? "English" : "German"}
+              {currentLocale === "en"
+                  ? "English"
+                  : currentLocale === "de"
+                      ? "German"
+                      : "Русский"}
               <DownOutlined />
             </Space>
           </Button>
