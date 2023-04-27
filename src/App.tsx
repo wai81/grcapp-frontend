@@ -4,8 +4,6 @@ import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
   ErrorComponent,
   notificationProvider,
-  ThemedLayoutV2,
-  ThemedTitleV2,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
@@ -34,8 +32,11 @@ import { Register } from "pages/register";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { authProvider } from "./authProvider";
-import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
+import {ThemedHeaderV2} from "./components/themedLayout/header";
+import {ThemedSiderV2} from "./components/themedLayout/sider";
+import {ThemedTitleV2} from "./components/themedLayout/title";
+import {ThemedLayoutV2} from "./components/themedLayout";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -88,7 +89,8 @@ function App() {
                 element={
                   <Authenticated fallback={<CatchAllNavigate to="/login" />}>
                     <ThemedLayoutV2
-                      Header={Header}
+                      Header={ThemedHeaderV2}
+                      Sider={ThemedSiderV2}
                       Title={({ collapsed }) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
@@ -134,7 +136,7 @@ function App() {
                 element={
                   <Authenticated>
                     <ThemedLayoutV2
-                      Header={Header}
+                      Header={ThemedHeaderV2}
                       Title={({ collapsed }) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
