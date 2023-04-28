@@ -50,6 +50,7 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
         theme={{
           ...RefineThemes.Blue,
           algorithm: mode === "light" ? defaultAlgorithm : darkAlgorithm,
+
         }}
       >
         {children}

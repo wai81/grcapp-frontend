@@ -57,6 +57,7 @@ export const ThemedTitleV2: React.FC<RefineLayoutThemedTitleProps> = ({
                     alignItems: "center",
                     justifyContent: "center",
                 }}
+
             >
                 <img
                     src="/grcapp-collapsed_2.svg"

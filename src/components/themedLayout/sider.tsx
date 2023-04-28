@@ -196,6 +196,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
     return (
       <>
         <Menu
+          theme="dark"
           selectedKeys={selectedKey ? [selectedKey] : []}
           defaultOpenKeys={defaultOpenKeys}
           mode="inline"
@@ -231,12 +232,15 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
           maskClosable={true}
         >
           <Layout>
+            {/*  */}
             <Layout.Sider
               style={{
                 height: "100vh",
                 overflow: "hidden",
-                backgroundColor: token.colorBgContainer,
-                borderRight: `1px solid ${token.colorBgElevated}`,
+                backgroundColor:"#001529",
+                borderRight: `1px solid "#001529"`,
+                //backgroundColor: token.colorBgContainer,
+                //borderRight: `1px solid ${token.colorBgElevated}`,
               }}
             >
               <div
@@ -247,7 +251,8 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
                   justifyContent: "flex-start",
                   alignItems: "center",
                   height: "64px",
-                  backgroundColor: token.colorBgElevated,
+                  backgroundColor: "#001529",
+                  //backgroundColor: token.colorBgElevated,
                 }}
               >
                 <RenderToTitle collapsed={false} />
@@ -261,6 +266,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
           size="large"
           onClick={() => setSiderVisible?.(true)}
           icon={<BarsOutlined />}
+
         ></Button>
       </>
     );
@@ -273,8 +279,10 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
   return (
     <Layout.Sider
       style={{
-        backgroundColor: token.colorBgContainer,
-        borderRight: `1px solid ${token.colorBgElevated}`,
+        backgroundColor: "#001529",
+        borderRight: `1px solid "#001529"`,
+        //backgroundColor: token.colorBgContainer,
+        //borderRight: `1px solid ${token.colorBgElevated}`,
       }}
       collapsible
       collapsed={drawerSiderVisible}
@@ -288,19 +296,22 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
             borderRadius: 0,
             height: "100%",
             width: "100%",
-            backgroundColor: token.colorBgElevated,
+            //backgroundColor: "#05345e",
+            //backgroundColor: token.colorBgElevated,
           }}
         >
           {drawerSiderVisible ? (
             <RightOutlined
               style={{
-                color: token.colorPrimary,
+                //color: token.colorPrimary,
+                  color: token.colorWhite,
               }}
             />
           ) : (
             <LeftOutlined
               style={{
-                color: token.colorPrimary,
+                //color: token.colorPrimary,
+                  color: token.colorWhite,
               }}
             />
           )}
@@ -310,13 +321,15 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
       <div
         style={{
           width: drawerSiderVisible ? "80px" : "200px",
-          padding: drawerSiderVisible ? "0" : "0 16px",
+          padding: drawerSiderVisible ? "0" : "0 0px",
           display: "flex",
           justifyContent: drawerSiderVisible ? "center" : "flex-start",
           alignItems: "center",
           height: "64px",
-          backgroundColor: token.colorBgElevated,
+          backgroundColor: "#001529",
+          //backgroundColor: token.colorBgElevated,
           fontSize: "14px",
+
         }}
       >
         <RenderToTitle collapsed={drawerSiderVisible} />
