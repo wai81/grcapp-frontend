@@ -1,167 +1,251 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  RegisterPageProps,
-  useTranslate,
-  useRouterContext,
-  useLink,
-  useRouterType,
-  useRegister,
-  useActiveAuthProvider,
+    RegisterPageProps,
+    RegisterFormTypes,
+    useRouterType,
+    useLink,
+    useActiveAuthProvider,
+    useTranslate,
+    useRouterContext,
+    useRegister,
 } from "@refinedev/core";
+import { ThemedTitle } from "@refinedev/antd";
+import {
+    layoutStyles,
+    containerStyles,
+    titleStyles,
+    headStyles,
+    bodyStyles,
+} from "./styles";
+import {
+    Row,
+    Col,
+    Layout,
+    Card,
+    Typography,
+    Form,
+    Input,
+    Button,
+    LayoutProps,
+    CardProps,
+    FormProps,
+    Divider,
+    theme,
+} from "antd";
 
-type DivPropsType = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->;
-type FormPropsType = React.DetailedHTMLProps<
-  React.FormHTMLAttributes<HTMLFormElement>,
-  HTMLFormElement
->;
+const { Text, Title } = Typography;
+const { useToken } = theme;
 
-type RegisterProps = RegisterPageProps<
-  DivPropsType,
-  DivPropsType,
-  FormPropsType
->;
-
+type RegisterProps = RegisterPageProps<LayoutProps, CardProps, FormProps>;
+/**
+ * **refine** has register page form which is served on `/register` route when the `authProvider` configuration is provided.
+ *
+ * @see {@link https://refine.dev/docs/ui-frameworks/antd/components/antd-auth-page/#register} for more details.
+ */
 export const RegisterPage: React.FC<RegisterProps> = ({
-  providers,
-  loginLink,
-  wrapperProps,
-  contentProps,
-  renderContent,
-  formProps,
-  title = undefined,
-}) => {
-  const routerType = useRouterType();
-  const Link = useLink();
-  const { Link: LegacyLink } = useRouterContext();
+                                                          providers,
+                                                          loginLink,
+                                                          wrapperProps,
+                                                          contentProps,
+                                                          renderContent,
+                                                          formProps,
+                                                          title,
+                                                      }) => {
+    const { token } = useToken();
+    const [form] = Form.useForm<RegisterFormTypes>();
+    const translate = useTranslate();
+    const routerType = useRouterType();
+    const Link = useLink();
+    const { Link: LegacyLink } = useRouterContext();
 
-  const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
+    const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const authProvider = useActiveAuthProvider();
+    const { mutate: register, isLoading } = useRegister<RegisterFormTypes>({
+        v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
+    });
 
-  const translate = useTranslate();
+    const PageTitle =
+        title === false ? null : (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "32px",
+                    fontSize: "20px",
+                }}
+            >
+                {title ?? <ThemedTitle collapsed={false} />}
+            </div>
+        );
 
-  const authProvider = useActiveAuthProvider();
-  const { mutate: register, isLoading } = useRegister({
-    v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
-  });
-
-  const renderLink = (link: React.ReactNode, text?: string) => {
-    if (link) {
-      if (typeof link === "string") {
-        return <ActiveLink to={link}>{text}</ActiveLink>;
-      }
-      return link;
-    }
-    return null;
-  };
-
-  const renderProviders = () => {
-    if (providers) {
-      return providers.map((provider) => (
-        <div
-          key={provider.name}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "1rem",
-          }}
-        >
-          <button
-            onClick={() =>
-              register({
-                providerName: provider.name,
-              })
-            }
+    const CardTitle = (
+        <Title
+            level={3}
             style={{
-              display: "flex",
-              alignItems: "center",
+                color: token.colorPrimaryTextHover,
+                ...titleStyles,
             }}
-          >
-            {provider?.icon}
-            {provider.label ?? <label>{provider.label}</label>}
-          </button>
-        </div>
-      ));
-    }
-    return null;
-  };
-
-  const content = (
-    <div {...contentProps}>
-      <h1 style={{ textAlign: "center" }}>
-        {translate("pages.register.title", "Sign up for your account")}
-      </h1>
-      {renderProviders()}
-      <hr />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          register({ email, password });
-        }}
-        {...formProps}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: 25,
-          }}
         >
-          <label>{translate("pages.register.fields.email", "Email")}</label>
-          <input
-            name="email"
-            type="email"
-            size={20}
-            autoCorrect="off"
-            spellCheck={false}
-            autoCapitalize="off"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label>
-            {translate("pages.register.fields.password", "Password")}
-          </label>
-          <input
-            name="password"
-            type="password"
-            required
-            size={20}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="submit"
-            value={translate("pages.register.buttons.submit", "Sign up")}
-            disabled={isLoading}
-          />
-          {loginLink ?? (
-            <>
-              <span>
-                {translate(
-                  "pages.login.buttons.haveAccount",
-                  "Have an account?"
-                )}{" "}
-                {renderLink(
-                  "/login",
-                  translate("pages.login.signin", "Sign in")
-                )}
-              </span>
-            </>
-          )}
-        </div>
-      </form>
-    </div>
-  );
+            {translate("pages.register.title", "Sign up for your account")}
+        </Title>
+    );
 
-  return (
-    <div {...wrapperProps}>
-      {renderContent ? renderContent(content, title) : content}
-    </div>
-  );
+    const renderProviders = () => {
+        if (providers && providers.length > 0) {
+            return (
+                <>
+                    {providers.map((provider) => {
+                        return (
+                            <Button
+                                key={provider.name}
+                                type="default"
+                                block
+                                icon={provider.icon}
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "100%",
+                                    marginBottom: "8px",
+                                }}
+                                onClick={() =>
+                                    register({
+                                        providerName: provider.name,
+                                    })
+                                }
+                            >
+                                {provider.label}
+                            </Button>
+                        );
+                    })}
+                    <Divider>
+                        <Text
+                            style={{
+                                color: token.colorTextLabel,
+                            }}
+                        >
+                            {translate("pages.login.divider", "or")}
+                        </Text>
+                    </Divider>
+                </>
+            );
+        }
+        return null;
+    };
+
+    const CardContent = (
+        <Card
+            title={CardTitle}
+            headStyle={headStyles}
+            bodyStyle={bodyStyles}
+            style={{
+                ...containerStyles,
+                backgroundColor: token.colorBgElevated,
+            }}
+            {...(contentProps ?? {})}
+        >
+            {renderProviders()}
+            <Form<RegisterFormTypes>
+                layout="vertical"
+                form={form}
+                onFinish={(values) => register(values)}
+                requiredMark={false}
+                {...formProps}
+            >
+                <Form.Item
+                    name="email"
+                    label={translate("pages.register.email", "Email")}
+                    rules={[
+                        { required: true },
+                        {
+                            type: "email",
+                            message: translate(
+                                "pages.register.errors.validEmail",
+                                "Invalid email address"
+                            ),
+                        },
+                    ]}
+                >
+                    <Input
+                        size="large"
+                        placeholder={translate("pages.register.fields.email", "Email")}
+                    />
+                </Form.Item>
+                <Form.Item
+                    name="password"
+                    label={translate("pages.register.fields.password", "Password")}
+                    rules={[{ required: true }]}
+                >
+                    <Input type="password" placeholder="●●●●●●●●" size="large" />
+                </Form.Item>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "24px",
+                    }}
+                >
+                    {loginLink ?? (
+                        <Text
+                            style={{
+                                fontSize: 12,
+                                marginLeft: "auto",
+                            }}
+                        >
+                            {translate("pages.login.buttons.haveAccount", "Have an account?")}{" "}
+                            <ActiveLink
+                                style={{
+                                    fontWeight: "bold",
+                                    color: token.colorPrimaryTextHover,
+                                }}
+                                to="/login"
+                            >
+                                {translate("pages.login.signin", "Sign in")}
+                            </ActiveLink>
+                        </Text>
+                    )}
+                </div>
+
+                <Form.Item
+                    style={{
+                        marginBottom: 0,
+                    }}
+                >
+                    <Button
+                        type="primary"
+                        size="large"
+                        htmlType="submit"
+                        loading={isLoading}
+                        block
+                    >
+                        {translate("pages.register.buttons.submit", "Sign up")}
+                    </Button>
+                </Form.Item>
+            </Form>
+        </Card>
+    );
+
+    return (
+        <Layout style={layoutStyles} {...(wrapperProps ?? {})}>
+            <Row
+                justify="center"
+                align="middle"
+                style={{
+                    height: "100vh",
+                }}
+            >
+                <Col xs={22}>
+                    {renderContent ? (
+                        renderContent(CardContent, PageTitle)
+                    ) : (
+                        <>
+                            {PageTitle}
+                            {CardContent}
+                        </>
+                    )}
+                </Col>
+            </Row>
+        </Layout>
+    );
 };

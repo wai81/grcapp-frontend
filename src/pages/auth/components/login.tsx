@@ -1,25 +1,45 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   LoginPageProps,
   LoginFormTypes,
-  useRouterContext,
   useLink,
   useRouterType,
+  useActiveAuthProvider,
   useLogin,
   useTranslate,
-  useActiveAuthProvider,
+  useRouterContext,
 } from "@refinedev/core";
+import { ThemedTitle } from "@refinedev/antd";
+import {
+  bodyStyles,
+  containerStyles,
+  headStyles,
+  layoutStyles,
+  titleStyles,
+} from "./styles";
+import {
+  Row,
+  Col,
+  Layout,
+  Card,
+  Typography,
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  CardProps,
+  LayoutProps,
+  Divider,
+  FormProps,
+  theme,
+} from "antd";
+import {ThemedTitleV2} from "../../../components/themedLayout/title";
 
-type DivPropsType = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->;
-type FormPropsType = React.DetailedHTMLProps<
-  React.FormHTMLAttributes<HTMLFormElement>,
-  HTMLFormElement
->;
 
-type LoginProps = LoginPageProps<DivPropsType, DivPropsType, FormPropsType>;
+const { Text, Title } = Typography;
+const { useToken } = theme;
+
+type LoginProps = LoginPageProps<LayoutProps, CardProps, FormProps>;
 
 export interface ILoginForm {
   username?: string;
@@ -29,166 +49,239 @@ export interface ILoginForm {
   redirectPath?: string;
 }
 
+/**
+ * **refine** has a default login page form which is served on `/login` route when the `authProvider` configuration is provided.
+ *
+ * @see {@link https://refine.dev/docs/ui-frameworks/antd/components/antd-auth-page/#login} for more details.
+ */
 export const LoginPage: React.FC<LoginProps> = ({
-  providers,
-  registerLink,
-  forgotPasswordLink,
-  rememberMe,
-  contentProps,
-  wrapperProps,
-  renderContent,
-  formProps,
-  title = undefined,
-}) => {
+                                                  providers,
+                                                  registerLink,
+                                                  forgotPasswordLink,
+                                                  rememberMe,
+                                                  contentProps,
+                                                  wrapperProps,
+                                                  renderContent,
+                                                  formProps,
+                                                  title,
+                                                }) => {
+  const { token } = useToken();
+  const [form] = Form.useForm<ILoginForm>();
+  const translate = useTranslate();
   const routerType = useRouterType();
   const Link = useLink();
   const { Link: LegacyLink } = useRouterContext();
 
   const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-
-  const translate = useTranslate();
-
   const authProvider = useActiveAuthProvider();
-  const { mutate: login } = useLogin<ILoginForm>();
+  const { mutate: login, isLoading } = useLogin<ILoginForm>();
 
-  const renderLink = (link: React.ReactNode, text?: string) => {
-    if (link) {
-      if (typeof link === "string") {
-        return <ActiveLink to={link}>{text}</ActiveLink>;
-      }
-      return link;
-    }
-    return null;
-  };
+  const PageTitle =
+      title === false ? null : (
+          <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "32px",
+                fontSize: "20px",
+              }}
+          >
+            {title ?? <ThemedTitleV2 collapsed={false} />}
+          </div>
+      );
+
+  const CardTitle = (
+      <Title
+          level={3}
+          style={{
+            color: token.colorPrimaryTextHover,
+            ...titleStyles,
+          }}
+      >
+        {translate("pages.login.title", "Sign in to your account")}
+      </Title>
+  );
 
   const renderProviders = () => {
-    if (providers) {
-      return providers.map((provider) => (
-        <div
-          key={provider.name}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "1rem",
-          }}
-        >
-          <button
-            onClick={() =>
-              login({
-                providerName: provider.name,
-              })
-            }
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {provider?.icon}
-            {provider.label ?? <label>{provider.label}</label>}
-          </button>
-        </div>
-      ));
+    if (providers && providers.length > 0) {
+      return (
+          <>
+            {providers.map((provider) => {
+              return (
+                  <Button
+                      key={provider.name}
+                      type="default"
+                      block
+                      icon={provider.icon}
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                        marginBottom: "8px",
+                      }}
+                      onClick={() =>
+                          login({
+                            providerName: provider.name,
+                          })
+                      }
+                  >
+                    {provider.label}
+                  </Button>
+              );
+            })}
+            <Divider>
+              <Text
+                  style={{
+                    color: token.colorTextLabel,
+                  }}
+              >
+                {translate("pages.login.divider", "or")}
+              </Text>
+            </Divider>
+          </>
+      );
     }
     return null;
   };
 
-  const content = (
-    <div {...contentProps}>
-      <h1 style={{ textAlign: "center" }}>
-        {translate("pages.login.title", "Sign in to your account")}
-      </h1>
-      {renderProviders()}
-      <hr />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          login({ username, password, remember });
-        }}
-        {...formProps}
-      >
-        <div
+  const CardContent = (
+      <Card
+          title={CardTitle}
+          headStyle={headStyles}
+          bodyStyle={bodyStyles}
           style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: 25,
+            ...containerStyles,
+            backgroundColor: token.colorBgElevated,
           }}
+          {...(contentProps ?? {})}
+      >
+        {renderProviders()}
+        <Form<LoginFormTypes>
+            layout="vertical"
+            form={form}
+            onFinish={(values) => login(values)}
+            requiredMark={false}
+            initialValues={{
+              remember: false,
+            }}
+            {...formProps}
         >
-          <label>{translate("pages.login.fields.username", "Username")}</label>
-          <input
-            name="username"
-            type="text"
-            size={20}
-            autoCorrect="off"
-            spellCheck={false}
-            autoCapitalize="off"
-            required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <label>{translate("pages.login.fields.password", "Password")}</label>
-          <input
-            type="password"
-            name="password"
-            required
-            size={20}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {rememberMe ?? (
-            <>
-              <label>
-                {translate("pages.login.buttons.rememberMe", "Remember me")}
-                <input
-                  name="remember"
-                  type="checkbox"
-                  size={20}
-                  checked={remember}
-                  value={remember.toString()}
-                  onChange={() => {
-                    setRemember(!remember);
-                  }}
-                />
-              </label>
-            </>
-          )}
-          <br />
-          {/*{forgotPasswordLink ??
-            renderLink(
-              "/forgot-password",
-              translate(
+          <Form.Item
+              name="email"
+              label={translate("pages.login.fields.username", "Username")}
+              rules={[
+                { required: true },
+                {
+                  type: "string",
+                  message: translate(
+                      "pages.login.errors.username",
+                      "Invalid username"
+                  ),
+                },
+              ]}
+          >
+            <Input
+                size="large"
+                placeholder={translate("pages.login.fields.username", "Username")}
+            />
+          </Form.Item>
+          <Form.Item
+              name="password"
+              label={translate("pages.login.fields.password", "Password")}
+              rules={[{ required: true }]}
+          >
+            <Input type="password" placeholder="●●●●●●●●" size="large" />
+          </Form.Item>
+          <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "24px",
+              }}
+          >
+            {rememberMe ?? (
+                <Form.Item name="remember" valuePropName="checked" noStyle>
+                  <Checkbox
+                      style={{
+                        fontSize: "12px",
+                      }}
+                  >
+                    {translate("pages.login.buttons.rememberMe", "Remember me")}
+                  </Checkbox>
+                </Form.Item>
+            )}
+            {/*{forgotPasswordLink ?? (
+            <ActiveLink
+              style={{
+                color: token.colorPrimaryTextHover,
+                fontSize: "12px",
+                marginLeft: "auto",
+              }}
+              to="/forgot-password"
+            >
+              {translate(
                 "pages.login.buttons.forgotPassword",
                 "Forgot password?"
-              )
-            )}*/}
-          <input
-            type="submit"
-            value={translate("pages.login.signin", "Sign in")}
-          />
-          {registerLink ?? (
-            <span>
-              {translate(
-                "pages.login.buttons.noAccount",
-                "Don’t have an account?"
-              )}{" "}
-              {renderLink(
-                "/register",
-                translate("pages.login.register", "Sign up")
               )}
-            </span>
+            </ActiveLink>
+          )}*/}
+          </div>
+          <Form.Item>
+            <Button
+                type="primary"
+                size="large"
+                htmlType="submit"
+                loading={isLoading}
+                block
+            >
+              {translate("pages.login.signin", "Sign in")}
+            </Button>
+          </Form.Item>
+        </Form>
+        <div style={{ marginTop: 8 }}>
+          {registerLink ?? (
+              <Text style={{ fontSize: 12 }}>
+                {translate(
+                    "pages.login.buttons.noAccount",
+                    "Don’t have an account?"
+                )}{" "}
+                <ActiveLink
+                    to="/register"
+                    style={{
+                      fontWeight: "bold",
+                      color: token.colorPrimaryTextHover,
+                    }}
+                >
+                  {translate("pages.login.signup", "Sign up")}
+                </ActiveLink>
+              </Text>
           )}
         </div>
-      </form>
-    </div>
+      </Card>
   );
 
   return (
-    <div {...wrapperProps}>
-      {renderContent ? renderContent(content, title) : content}
-    </div>
+      <Layout style={layoutStyles} {...(wrapperProps ?? {})}>
+        <Row
+            justify="center"
+            align="middle"
+            style={{
+              height: "100vh",
+            }}
+        >
+          <Col xs={22}>
+            {renderContent ? (
+                renderContent(CardContent, PageTitle)
+            ) : (
+                <>
+                  {PageTitle}
+                  {CardContent}
+                </>
+            )}
+          </Col>
+        </Row>
+      </Layout>
   );
 };
