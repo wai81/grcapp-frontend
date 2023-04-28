@@ -26,17 +26,38 @@ import {
   CategoryList,
   CategoryShow,
 } from "pages/categories";
-import { ForgotPassword } from "pages/forgotPassword";
-import { Login } from "pages/login";
-import { Register } from "pages/register";
+// import { ForgotPassword } from "pages/forgotPassword";
+// import { Login } from "pages/login";
+// import { Register } from "pages/register";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-import { authProvider } from "./authProvider";
+import { authProvider } from "./providers/auth-provider";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import {ThemedHeaderV2} from "./components/themedLayout/header";
 import {ThemedSiderV2} from "./components/themedLayout/sider";
 import {ThemedTitleV2} from "./components/themedLayout/title";
 import {ThemedLayoutV2} from "./components/themedLayout";
+import {TOKEN_KEY} from "./constants";
+import axios, {AxiosRequestConfig} from "axios";
+import {Register} from "./pages/register";
+import {AuthPage} from "./pages/auth";
+
+const axiosInstance = axios.create();
+
+axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    if (request.headers) {
+      request.headers["Authorization"] = `Bearer ${token}`;
+    } else {
+      request.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+    }
+  }
+  return request;
+});
+
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -54,7 +75,7 @@ function App() {
           <Refine
             dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
             notificationProvider={notificationProvider}
-            authProvider={authProvider}
+            authProvider={authProvider(axiosInstance)}
             i18nProvider={i18nProvider}
             routerProvider={routerBindings}
             resources={[
@@ -95,7 +116,6 @@ function App() {
                         <ThemedTitleV2
                           collapsed={collapsed}
                           text="GRCApp"
-                          icon={<AppIcon />}
                         />
                       )}
                     >
@@ -121,6 +141,7 @@ function App() {
                   <Route path="show/:id" element={<CategoryShow />} />
                 </Route>
               </Route>
+              {/* маршрутизация для страницы логина   */}
               <Route
                 element={
                   <Authenticated fallback={<Outlet />}>
@@ -128,10 +149,11 @@ function App() {
                   </Authenticated>
                 }
               >
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/login" element={<AuthPage type="login" />} />
+                {/*<Route path="/register" element={<Register />} />*/}
+                {/*<Route path="/forgot-password" element={<ForgotPassword />} />*/}
               </Route>
+              {/* маршрутизация для страницы 404  */}
               <Route
                 element={
                   <Authenticated>
@@ -141,7 +163,6 @@ function App() {
                         <ThemedTitleV2
                           collapsed={collapsed}
                           text="GRCApp"
-                          icon={<AppIcon />}
                         />
                       )}
                     >
