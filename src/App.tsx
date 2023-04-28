@@ -12,7 +12,7 @@ import routerBindings, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-import dataProvider from "@refinedev/simple-rest";
+//import dataProvider from "@refinedev/simple-rest";
 import { AppIcon } from "components/app-icon";
 import {
   BlogPostCreate,
@@ -37,10 +37,14 @@ import {ThemedHeaderV2} from "./components/themedLayout/header";
 import {ThemedSiderV2} from "./components/themedLayout/sider";
 import {ThemedTitleV2} from "./components/themedLayout/title";
 import {ThemedLayoutV2} from "./components/themedLayout";
-import {TOKEN_KEY} from "./constants";
+import {API_URL, TOKEN_KEY} from "./constants";
 import axios, {AxiosRequestConfig} from "axios";
 import {Register} from "./pages/register";
 import {AuthPage} from "./pages/auth";
+import {dataProvider} from "./providers/data-provider";
+import {CalendarOutlined, CarFilled} from "@ant-design/icons";
+import {BookingTransportList} from "./pages/booking_transports";
+import {TransportList} from "./pages/transports";
 
 const axiosInstance = axios.create();
 
@@ -55,6 +59,7 @@ axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
       };
     }
   }
+  console.log(request)
   return request;
 });
 
@@ -68,37 +73,74 @@ function App() {
     getLocale: () => i18n.language,
   };
 
+
   return (
     <BrowserRouter>
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <Refine
-            dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+            //dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+            dataProvider={dataProvider(API_URL, axiosInstance)}
             notificationProvider={notificationProvider}
             authProvider={authProvider(axiosInstance)}
             i18nProvider={i18nProvider}
             routerProvider={routerBindings}
             resources={[
               {
-                name: "blog_posts",
-                list: "/blog-posts",
-                create: "/blog-posts/create",
-                edit: "/blog-posts/edit/:id",
-                show: "/blog-posts/show/:id",
+                name: "booking-transport",
                 meta: {
-                  canDelete: true,
+                   icon: <CarFilled />,
+                  },
+                }, {
+                name: "dashboard_transport",
+                list: "/booking-transport/dashboard_transport",
+                //show: "/booking-transport/booking_transport/show/:id",
+                meta: {
+                  //icon: <CalendarOutlined />,
+                  parent: "booking-transport",
                 },
               },
               {
-                name: "categories",
-                list: "/categories",
-                create: "/categories/create",
-                edit: "/categories/edit/:id",
-                show: "/categories/show/:id",
+                name: "booking_transport",
+                list: "/booking-transport/booking_transport",
+                show: "/booking-transport/booking_transport/show/:id",
+
                 meta: {
-                  canDelete: true,
+                  //icon: <LibraryBooksTwoToneIcon/>,
+                  parent: "booking-transport",
                 },
+
+              }, {
+                name: "transports",
+                list: "/booking-transport/transports",
+                show: "/booking-transport/transports/show/:id",
+
+                meta: {
+                  //icon: <DriveEtaTwoToneIcon/>,
+                  parent: "booking-transport",
+                },
+
               },
+              // {
+              //   name: "blog_posts",
+              //   list: "/blog-posts",
+              //   create: "/blog-posts/create",
+              //   edit: "/blog-posts/edit/:id",
+              //   show: "/blog-posts/show/:id",
+              //   meta: {
+              //     canDelete: true,
+              //   },
+              // },
+              // {
+              //   name: "categories",
+              //   list: "/categories",
+              //   create: "/categories/create",
+              //   edit: "/categories/edit/:id",
+              //   show: "/categories/show/:id",
+              //   meta: {
+              //     canDelete: true,
+              //   },
+              // },
             ]}
             options={{
               syncWithLocation: true,
@@ -124,22 +166,34 @@ function App() {
                   </Authenticated>
                 }
               >
+                {/* маршрутизация на главную страницу(по умолчанию) поле аутенфикации */}
                 <Route
                   index
-                  element={<NavigateToResource resource="blog_posts" />}
+                  element={<NavigateToResource resource="dashboard_transport"/>}
                 />
-                <Route path="/blog-posts">
-                  <Route index element={<BlogPostList />} />
-                  <Route path="create" element={<BlogPostCreate />} />
-                  <Route path="edit/:id" element={<BlogPostEdit />} />
-                  <Route path="show/:id" element={<BlogPostShow />} />
+                <Route path="booking-transport">
+                  {/*<Route path="dashboard_transport">*/}
+                  {/*  <Route index element={<DashboardBookingTransport/>}/>*/}
+                  {/*</Route>*/}
+                  <Route path="booking_transport">
+                    <Route index element={<BookingTransportList/>}/>
+                  </Route>
+                  <Route path="transports">
+                    <Route index element={<TransportList/>}/>
+                  </Route>
                 </Route>
-                <Route path="/categories">
-                  <Route index element={<CategoryList />} />
-                  <Route path="create" element={<CategoryCreate />} />
-                  <Route path="edit/:id" element={<CategoryEdit />} />
-                  <Route path="show/:id" element={<CategoryShow />} />
-                </Route>
+                {/*<Route path="/blog-posts">*/}
+                {/*  <Route index element={<BlogPostList />} />*/}
+                {/*  <Route path="create" element={<BlogPostCreate />} />*/}
+                {/*  <Route path="edit/:id" element={<BlogPostEdit />} />*/}
+                {/*  <Route path="show/:id" element={<BlogPostShow />} />*/}
+                {/*</Route>*/}
+                {/*<Route path="/categories">*/}
+                {/*  <Route index element={<CategoryList />} />*/}
+                {/*  <Route path="create" element={<CategoryCreate />} />*/}
+                {/*  <Route path="edit/:id" element={<CategoryEdit />} />*/}
+                {/*  <Route path="show/:id" element={<CategoryShow />} />*/}
+                {/*</Route>*/}
               </Route>
               {/* маршрутизация для страницы логина   */}
               <Route

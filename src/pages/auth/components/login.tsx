@@ -169,7 +169,7 @@ export const LoginPage: React.FC<LoginProps> = ({
             {...formProps}
         >
           <Form.Item
-              name="email"
+              name="username"
               label={translate("pages.login.fields.username", "Username")}
               rules={[
                 { required: true },
@@ -185,6 +185,7 @@ export const LoginPage: React.FC<LoginProps> = ({
             <Input
                 size="large"
                 placeholder={translate("pages.login.fields.username", "Username")}
+                autoComplete="username"
             />
           </Form.Item>
           <Form.Item
@@ -192,7 +193,12 @@ export const LoginPage: React.FC<LoginProps> = ({
               label={translate("pages.login.fields.password", "Password")}
               rules={[{ required: true }]}
           >
-            <Input type="password" placeholder="●●●●●●●●" size="large" />
+            <Input
+                type="password"
+                placeholder="●●●●●●●●"
+                size="large"
+                autoComplete="current-password"
+            />
           </Form.Item>
           <div
               style={{

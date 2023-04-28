@@ -1,8 +1,6 @@
 import { AuthBindings } from "@refinedev/core";
 import axios, {AxiosInstance} from "axios";
-import {API_URL} from "../../constants";
-
-export const TOKEN_KEY = "refine-auth";
+import {API_URL, TOKEN_KEY} from "../../constants";
 
 export const authProvider = (axiosInstance: AxiosInstance): AuthBindings => {
   return {
@@ -66,7 +64,7 @@ export const authProvider = (axiosInstance: AxiosInstance): AuthBindings => {
     },
     onError: async ({ error }) => {
       if (error.status === 401 || error.status === 403) {
-        localStorage.removeItem(TOKEN_KEY);
+        //localStorage.removeItem(TOKEN_KEY);
         return {
           logout: true,
           redirectTo: "/login",

@@ -1,21 +1,19 @@
 import React, {useContext} from "react";
-import {useActiveAuthProvider, useGetIdentity, useGetLocale, useSetLocale} from "@refinedev/core";
+import {useActiveAuthProvider, useApiUrl, useGetIdentity, useGetLocale, useSetLocale} from "@refinedev/core";
 import {Layout as AntdLayout, Typography, Avatar, Space, theme, MenuProps, Dropdown, Button, Switch} from "antd";
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import {ColorModeContext} from "../../contexts/color-mode";
 import {useTranslation} from "react-i18next";
 import {DownOutlined} from "@ant-design/icons";
+import {IUser} from "../../interfaces/IUser";
 
 const { Text } = Typography;
 const { useToken } = theme;
 
-type IUser = {
-    id: number;
-    name: string;
-    avatar: string;
-};
+
 
 export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
+  const apiUrl = useApiUrl();
   const { token } = useToken();
   const { i18n } = useTranslation();
   const locale = useGetLocale();
@@ -32,8 +30,8 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
             onClick: () => changeLanguage(lang),
             icon: (
                 <span style={{ marginRight: 8 }}>
-          <Avatar size={16} src={`/images/flags/${lang}.svg`} />
-        </span>
+                    <Avatar size={16} src={`${apiUrl}/${user?.avatar}`} />
+                </span>
             ),
             label: lang === "en"
                 ? "English"
@@ -43,11 +41,11 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
             ,
       }));
 
-  const shouldRenderHeader = user && (user.name || user.avatar);
-
-  if (!shouldRenderHeader) {
-    return null;
-  }
+  // const shouldRenderHeader = user && (user.username || user.avatar);
+  //
+  // if (!shouldRenderHeader) {
+  //   return null;
+  // }
 
   return (
     <AntdLayout.Header
@@ -86,8 +84,8 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
                 defaultChecked={mode === "dark"}
             />
             <Space style={{ marginLeft: "8px" }} size="middle">
-                {user?.name && <Text strong>{user.name}</Text>}
-                {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+                {user?.username && <Text strong>{user.username}</Text>}
+                {user?.avatar && <Avatar src={user?.avatar} alt={user?.username} />}
             </Space>
         </Space>
     </AntdLayout.Header>
