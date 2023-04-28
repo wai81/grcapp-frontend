@@ -1,59 +1,166 @@
 import React from "react";
-import { IResourceComponentsProps, BaseRecord } from "@refinedev/core";
+import {IResourceComponentsProps, BaseRecord, CrudFilters, useTranslate, HttpError, useApiUrl} from "@refinedev/core";
 import {
     useTable,
     List,
     ShowButton,
     ImageField,
     BooleanField,
-    DateField,
+    DateField, useSelect,
 } from "@refinedev/antd";
-import { Table, Space } from "antd";
+import {Table, Space, Row, Col, FormProps, Form, Input, Card, Select, Button, Avatar} from "antd";
+import {SearchOutlined} from "@ant-design/icons";
+import {ITransporFilterVariables, ITransport} from "../../interfaces/ITransport";
+
 
 export const TransportList: React.FC<IResourceComponentsProps> = () => {
-    const { tableProps } = useTable({
+    const { tableProps, sorter, searchFormProps} = useTable<
+        ITransport,
+        HttpError,
+        ITransporFilterVariables
+        >({
         syncWithLocation: true,
-    });
+        onSearch: (params) => {
+            const filters: CrudFilters = [];
+            const { q, is_active } = params;
+            filters.push({
+                field: "q",
+                operator: "eq",
+                value: q !== "" ? q : undefined,
+            });
+            filters.push({
+                field: "is_active",
+                operator: "eq",
+                value: is_active !== "" ? is_active : undefined,
+            });
+            return filters;
+        },
+        initialSorter: [
+            {
+                field: "title",
+                order: "asc",
+            },
+        ]
 
+    });
+    const t = useTranslate()
+    const apiUrl = useApiUrl();
     return (
-        <List>
-            <Table {...tableProps} rowKey="id">
-                <Table.Column dataIndex="id" title="Id" />
-                <Table.Column dataIndex="title" title="Title" />
-                <Table.Column
-                    dataIndex={["image_url"]}
-                    title="Image Url"
-                    render={(value: any) => (
-                        <ImageField
-                            style={{ maxWidth: "100px" }}
-                            value={value}
+        <Row gutter={[16, 16]}>
+            <Col
+                xl={6}
+                lg={24}
+                xs={24}
+                style={{
+                    marginTop: "68px",
+                }}
+            >
+                <Card title={t("filter.title")}>
+                    <Filter
+                        formProps={searchFormProps}
+                    />
+                </Card>
+            </Col>
+            <Col xl={18} xs={24}>
+                <List>
+                    <Table {...tableProps} rowKey="id">
+                        <Table.Column
+                            dataIndex={["is_active"]}
+                            title={t("transports.fields.is_active")}
+                            render={(value: any) => <BooleanField value={value} />}
                         />
-                    )}
-                />
-                <Table.Column
-                    dataIndex={["is_active"]}
-                    title="Is Active"
-                    render={(value: any) => <BooleanField value={value} />}
-                />
-                <Table.Column
-                    dataIndex={["created_at"]}
-                    title="Created At"
-                    render={(value: any) => <DateField value={value} />}
-                />
-                <Table.Column
-                    title="Actions"
-                    dataIndex="actions"
-                    render={(_, record: BaseRecord) => (
-                        <Space>
-                            <ShowButton
-                                hideText
-                                size="small"
-                                recordItemId={record.id}
-                            />
-                        </Space>
-                    )}
-                />
-            </Table>
-        </List>
+                        <Table.Column
+                            dataIndex={["image_url"]}
+                            title=""
+                            render={(value: any) => (
+                                <Avatar
+                                    style={{ maxWidth: "120px" }}
+                                    src={`${apiUrl}/${value}`}
+                                />
+                            )}
+                        />
+                        <Table.Column
+                            dataIndex="title"
+                            title={t("transports.fields.title")}
+                            sorter
+                        />
+                        <Table.Column dataIndex="description" title={t("transports.fields.details")} />
+
+                        <Table.Column
+                            title={t("table.actions")}
+                            dataIndex="actions"
+                            render={(_, record: BaseRecord) => (
+                                <Space>
+                                    <ShowButton
+                                        hideText
+                                        size="small"
+                                        recordItemId={record.id}
+                                    />
+                                </Space>
+                            )}
+                        />
+                    </Table>
+                </List>
+            </Col>
+        </Row>
     );
+};
+
+const Filter: React.FC<{ formProps: FormProps}> = (
+    props,
+) => {
+    const t = useTranslate();
+    return(
+        <Form
+            layout="vertical"
+            {...props.formProps}
+        >
+            <Row gutter={[10, 0]} align="bottom">
+                <Col xs={24} xl={24} md={12}>
+                    <Form.Item label={t("transports.filter.search.label")} name="q">
+                        <Input
+                            placeholder={t("transports.filter.search.placeholder")}
+                            prefix={<SearchOutlined />}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} xl={24} md={12}>
+                    <Form.Item
+                        label={t("transports.filter.is_active.label")}
+                        name="is_active"
+                    >
+                        <Select
+                            allowClear
+                            placeholder={t("transports.filter.is_active.label")}
+                            options={[
+                                {
+                                    label: t("transports.filter.is_active.none"),
+                                    value: "",
+                                },
+                                {
+                                    label: t("transports.filter.is_active.true"),
+                                    value: "true",
+                                },
+                                {
+                                    label: t("transports.filter.is_active.false"),
+                                    value: "false",
+                                },
+                            ]}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col xs={24} xl={24} md={8}>
+                    <Form.Item>
+                        <Button
+                            style={{ width: "100%" }}
+                            htmlType="submit"
+                            type="primary"
+                        >
+                            {t("transports.filter.submit")}
+                        </Button>
+                    </Form.Item>
+                </Col>
+            </Row>
+        </Form>
+    )
 };

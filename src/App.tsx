@@ -1,6 +1,5 @@
 import { Authenticated, Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-
 import {
   ErrorComponent,
   notificationProvider,
@@ -12,23 +11,6 @@ import routerBindings, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-//import dataProvider from "@refinedev/simple-rest";
-import { AppIcon } from "components/app-icon";
-import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "pages/blog-posts";
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "pages/categories";
-// import { ForgotPassword } from "pages/forgotPassword";
-// import { Login } from "pages/login";
-// import { Register } from "pages/register";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { authProvider } from "./providers/auth-provider";
@@ -39,7 +21,6 @@ import {ThemedTitleV2} from "./components/themedLayout/title";
 import {ThemedLayoutV2} from "./components/themedLayout";
 import {API_URL, TOKEN_KEY} from "./constants";
 import axios, {AxiosRequestConfig} from "axios";
-import {Register} from "./pages/register";
 import {AuthPage} from "./pages/auth";
 import {dataProvider} from "./providers/data-provider";
 import {CalendarOutlined, CarFilled} from "@ant-design/icons";

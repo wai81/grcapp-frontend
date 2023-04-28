@@ -100,6 +100,9 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
               key={item.key}
               icon={icon ?? <UnorderedListOutlined />}
               title={label}
+              style = {{
+                  marginLeft:'0px'
+              }}
             >
               {renderTreeView(children, selectedKey)}
             </SubMenu>
@@ -124,6 +127,9 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
           <Menu.Item
             key={item.key}
             icon={icon ?? (isRoute && <UnorderedListOutlined />)}
+            style = {{
+                marginLeft:'0px'
+            }}
           >
             <Link to={route ?? ""}>{label}</Link>
             {!drawerSiderVisible && isSelected && (
@@ -158,6 +164,9 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
       key="logout"
       onClick={() => handleLogout()}
       icon={<LogoutOutlined />}
+      style = {{
+          marginLeft:'0px'
+      }}
     >
       {translate("buttons.logout", "Logout")}
     </Menu.Item>

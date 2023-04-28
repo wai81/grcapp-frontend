@@ -30,7 +30,7 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
             onClick: () => changeLanguage(lang),
             icon: (
                 <span style={{ marginRight: 8 }}>
-                    <Avatar size={16} src={`${apiUrl}/${user?.avatar}`} />
+                    <Avatar size={16} src={`/images/flags/${lang}.svg`} />
                 </span>
             ),
             label: lang === "en"
@@ -40,7 +40,11 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
                     : "Русский"
             ,
       }));
-
+  const randomColor= () =>{
+      const hex = Math.floor(Math.random() * 0xFFFFFF);
+      const color = "#" + hex.toString(16);
+      return color
+    }
   // const shouldRenderHeader = user && (user.username || user.avatar);
   //
   // if (!shouldRenderHeader) {
@@ -84,8 +88,14 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
                 defaultChecked={mode === "dark"}
             />
             <Space style={{ marginLeft: "8px" }} size="middle">
-                {user?.username && <Text strong>{user.username}</Text>}
-                {user?.avatar && <Avatar src={user?.avatar} alt={user?.username} />}
+                {user?.username && <Text strong>{user?.last_name} {user?.first_name}</Text>}
+
+                {user?.avatar == null ?
+                    <Avatar style={{ backgroundColor: randomColor()}}>
+                        {user?.last_name.charAt(0)}{user?.first_name.charAt(0)}
+                    </Avatar>
+                    : <Avatar src={`${apiUrl}/${user?.avatar}`} alt={user?.last_name} />
+                }
             </Space>
         </Space>
     </AntdLayout.Header>
