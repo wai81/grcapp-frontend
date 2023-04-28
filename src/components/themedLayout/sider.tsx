@@ -311,7 +311,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
             <LeftOutlined
               style={{
                 //color: token.colorPrimary,
-                  color: token.colorWhite,
+                color: token.colorWhite,
               }}
             />
           )}
