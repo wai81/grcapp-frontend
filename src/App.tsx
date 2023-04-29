@@ -143,7 +143,7 @@ function App() {
                       Title={({ collapsed }) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
-                          text="GRCApp"
+                          text="GR@pp"
                         />
                       )}
                     >
@@ -202,7 +202,7 @@ function App() {
                       Title={({ collapsed }) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
-                          text="GRCApp"
+                          text="GR@pp"
                         />
                       )}
                     >

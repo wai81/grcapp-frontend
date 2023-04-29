@@ -6,12 +6,12 @@ import {
     ShowButton,
     ImageField,
     BooleanField,
-    DateField, useSelect, useDrawerForm,
+    DateField, useSelect, useDrawerForm, EditButton,
 } from "@refinedev/antd";
 import {Table, Space, Row, Col, FormProps, Form, Input, Card, Select, Button, Avatar} from "antd";
 import {SearchOutlined} from "@ant-design/icons";
-import {ICreateTransport, ITransporFilterVariables, ITransport} from "../../interfaces/ITransport";
-import {CreateTransport} from "./components";
+import {ICreateTransport, ITransporFilterVariables, ITransport, IUpdateTransport} from "../../interfaces/ITransport";
+import {CreateTransport, EditTransport} from "./components";
 
 
 export const TransportList: React.FC<IResourceComponentsProps> = () => {
@@ -56,6 +56,18 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
         redirect: false,
     });
 
+    const {
+        drawerProps: editDrawerProps,
+        formProps: editFormProps,
+        saveButtonProps: editSaveButtonProps,
+        show: editShow,
+        id: editId,
+    } = useDrawerForm<IUpdateTransport>({
+        action: "edit",
+        resource: "transports",
+        redirect: false,
+    });
+
     return (
 
         <List createButtonProps={{ onClick: () => createShow()}}>
@@ -63,6 +75,12 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
                 drawerProps={createDrawerProps}
                 formProps={createFormProps}
                 saveButtonProps={createSaveButtonProps}
+            />
+            <EditTransport
+                drawerProps={editDrawerProps}
+                formProps={editFormProps}
+                saveButtonProps={editSaveButtonProps}
+                editId={editId}
             />
             <Row gutter={[16, 16]}>
                 <Col
@@ -109,6 +127,11 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
                                         hideText
                                         size="small"
                                         recordItemId={record.id}
+                                    />
+                                    <EditButton
+                                        hideText
+                                        size="small"
+                                        onClick={() => editShow(record.id)}
                                     />
                                 </Space>
                             )}

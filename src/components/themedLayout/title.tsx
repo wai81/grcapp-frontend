@@ -37,8 +37,8 @@ export const ThemedTitleV2: React.FC<RefineLayoutThemedTitleProps> = ({
 
             >
                 <img
-                    src="/grcapp-collapsed_2.svg"
-                    alt="GRC@pp"
+                    src="/grcap-collapsed_4.svg"
+                    alt="GR@pp"
                     style={{
                         margin: "0 auto",
                         padding: "12px 0",
@@ -48,8 +48,8 @@ export const ThemedTitleV2: React.FC<RefineLayoutThemedTitleProps> = ({
             </div>
         ) : (
             <img
-                src="/grcapp_3.svg"
-                alt="GRC@pp"
+                src="/grcap_4.svg"
+                alt="GR@pp"
                 style={{
                     width: "200px",
                     padding: "12px 24px",
