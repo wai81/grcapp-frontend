@@ -6,11 +6,12 @@ import {
     ShowButton,
     ImageField,
     BooleanField,
-    DateField, useSelect,
+    DateField, useSelect, useDrawerForm,
 } from "@refinedev/antd";
 import {Table, Space, Row, Col, FormProps, Form, Input, Card, Select, Button, Avatar} from "antd";
 import {SearchOutlined} from "@ant-design/icons";
-import {ITransporFilterVariables, ITransport} from "../../interfaces/ITransport";
+import {ICreateTransport, ITransporFilterVariables, ITransport} from "../../interfaces/ITransport";
+import {CreateTransport} from "./components";
 
 
 export const TransportList: React.FC<IResourceComponentsProps> = () => {
@@ -43,17 +44,31 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
     });
     const t = useTranslate()
     const apiUrl = useApiUrl();
+
+    const {
+        drawerProps: createDrawerProps,
+        formProps: createFormProps,
+        saveButtonProps: createSaveButtonProps,
+        show: createShow,
+    } = useDrawerForm<ICreateTransport>({
+        action: "create",
+        resource: "transports",
+        redirect: false,
+    });
+
     return (
 
-        <List>
+        <List createButtonProps={{ onClick: () => createShow()}}>
+            <CreateTransport
+                drawerProps={createDrawerProps}
+                formProps={createFormProps}
+                saveButtonProps={createSaveButtonProps}
+            />
             <Row gutter={[16, 16]}>
                 <Col
                     xl={6}
                     lg={24}
                     xs={24}
-                    // style={{
-                    //     marginTop: "68px",
-                    // }}
                 >
                     <Card title={t("filter.title")}>
                         <Filter

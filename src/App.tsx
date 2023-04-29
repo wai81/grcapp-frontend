@@ -23,7 +23,7 @@ import {API_URL, TOKEN_KEY} from "./constants";
 import axios, {AxiosRequestConfig} from "axios";
 import {AuthPage} from "./pages/auth";
 import {dataProvider} from "./providers/data-provider";
-import {CalendarOutlined, CarFilled} from "@ant-design/icons";
+import {CalendarOutlined, CarFilled, SettingOutlined} from "@ant-design/icons";
 import {BookingTransportList} from "./pages/booking_transports";
 import {TransportList} from "./pages/transports";
 
@@ -40,7 +40,6 @@ axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
       };
     }
   }
-  console.log(request)
   return request;
 });
 
@@ -72,7 +71,8 @@ function App() {
                 meta: {
                    icon: <CarFilled />,
                   },
-                }, {
+              },
+              {
                 name: "dashboard_transport",
                 list: "/booking-transport/dashboard_transport",
                 //show: "/booking-transport/booking_transport/show/:id",
@@ -95,12 +95,17 @@ function App() {
                 name: "transports",
                 list: "/booking-transport/transports",
                 show: "/booking-transport/transports/show/:id",
-
                 meta: {
                   //icon: <DriveEtaTwoToneIcon/>,
                   parent: "booking-transport",
                 },
 
+              },
+              {
+                name: "settings",
+                meta: {
+                  icon: <SettingOutlined />,
+                },
               },
               // {
               //   name: "blog_posts",
