@@ -14,15 +14,13 @@ import {ITransporFilterVariables, ITransport} from "../../interfaces/ITransport"
 
 
 export const TransportList: React.FC<IResourceComponentsProps> = () => {
-    const { tableProps, sorter, searchFormProps} = useTable<
-        ITransport,
+    const {tableProps, sorter, searchFormProps} = useTable<ITransport,
         HttpError,
-        ITransporFilterVariables
-        >({
+        ITransporFilterVariables>({
         syncWithLocation: true,
         onSearch: (params) => {
             const filters: CrudFilters = [];
-            const { q, is_active } = params;
+            const {q, is_active} = params;
             filters.push({
                 field: "q",
                 operator: "eq",
@@ -46,35 +44,36 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
     const t = useTranslate()
     const apiUrl = useApiUrl();
     return (
-        <Row gutter={[16, 16]}>
-            <Col
-                xl={6}
-                lg={24}
-                xs={24}
-                style={{
-                    marginTop: "68px",
-                }}
-            >
-                <Card title={t("filter.title")}>
-                    <Filter
-                        formProps={searchFormProps}
-                    />
-                </Card>
-            </Col>
-            <Col xl={18} xs={24}>
-                <List>
+
+        <List>
+            <Row gutter={[16, 16]}>
+                <Col
+                    xl={6}
+                    lg={24}
+                    xs={24}
+                    // style={{
+                    //     marginTop: "68px",
+                    // }}
+                >
+                    <Card title={t("filter.title")}>
+                        <Filter
+                            formProps={searchFormProps}
+                        />
+                    </Card>
+                </Col>
+                <Col xl={18} xs={24}>
                     <Table {...tableProps} rowKey="id">
                         <Table.Column
                             dataIndex={["is_active"]}
                             title={t("transports.fields.is_active")}
-                            render={(value: any) => <BooleanField value={value} />}
+                            render={(value: any) => <BooleanField value={value}/>}
                         />
                         <Table.Column
                             dataIndex={["image_url"]}
                             title=""
                             render={(value: any) => (
                                 <Avatar
-                                    style={{ maxWidth: "120px" }}
+                                    size={"large"}
                                     src={`${apiUrl}/${value}`}
                                 />
                             )}
@@ -84,7 +83,7 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
                             title={t("transports.fields.title")}
                             sorter
                         />
-                        <Table.Column dataIndex="description" title={t("transports.fields.details")} />
+                        <Table.Column dataIndex="description" title={t("transports.fields.details")}/>
 
                         <Table.Column
                             title={t("table.actions")}
@@ -100,17 +99,18 @@ export const TransportList: React.FC<IResourceComponentsProps> = () => {
                             )}
                         />
                     </Table>
-                </List>
-            </Col>
-        </Row>
+                </Col>
+            </Row>
+        </List>
+
     );
 };
 
-const Filter: React.FC<{ formProps: FormProps}> = (
+const Filter: React.FC<{ formProps: FormProps }> = (
     props,
 ) => {
     const t = useTranslate();
-    return(
+    return (
         <Form
             layout="vertical"
             {...props.formProps}
@@ -120,7 +120,7 @@ const Filter: React.FC<{ formProps: FormProps}> = (
                     <Form.Item label={t("transports.filter.search.label")} name="q">
                         <Input
                             placeholder={t("transports.filter.search.placeholder")}
-                            prefix={<SearchOutlined />}
+                            prefix={<SearchOutlined/>}
                         />
                     </Form.Item>
                 </Col>
@@ -152,7 +152,7 @@ const Filter: React.FC<{ formProps: FormProps}> = (
                 <Col xs={24} xl={24} md={8}>
                     <Form.Item>
                         <Button
-                            style={{ width: "100%" }}
+                            style={{width: "100%"}}
                             htmlType="submit"
                             type="primary"
                         >
