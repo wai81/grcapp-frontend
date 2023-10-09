@@ -40,6 +40,7 @@ export const ThemedTitleV2: React.FC<RefineLayoutThemedTitleProps> = ({
                     src="/grcap-collapsed_4.svg"
                     alt="GR@pp"
                     style={{
+                        color: token.colorTextHeading,
                         margin: "0 auto",
                         padding: "12px 0",
                         maxHeight: "65.5px",
@@ -51,6 +52,7 @@ export const ThemedTitleV2: React.FC<RefineLayoutThemedTitleProps> = ({
                 src="/grcap_4.svg"
                 alt="GR@pp"
                 style={{
+                    color: token.colorTextHeading,
                     width: "200px",
                     padding: "12px 24px",
                 }}

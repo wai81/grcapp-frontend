@@ -15,7 +15,7 @@ import {
   pickNotDeprecated,
   useWarnAboutChange,
 } from "@refinedev/core";
-import { ThemedTitleV2, useSiderVisible } from "@refinedev/antd";
+import { ThemedTitleV2, useThemedLayoutContext } from "@refinedev/antd";
 import {
   DashboardOutlined,
   LogoutOutlined,
@@ -42,14 +42,16 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
   Title: TitleFromProps,
   render,
   meta,
+  fixed,
+  activeItemDisabled = false,
 }) => {
   const { token } = useToken();
   const {
-    siderVisible,
-    setSiderVisible,
-    drawerSiderVisible,
-    setDrawerSiderVisible,
-  } = useSiderVisible();
+    siderCollapsed,
+    setSiderCollapsed,
+    mobileSiderOpen,
+    setMobileSiderOpen,
+  } = useThemedLayoutContext();
 
   const isExistAuthentication = useIsExistAuthentication();
   const routerType = useRouterType();
@@ -100,9 +102,6 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
               key={item.key}
               icon={icon ?? <UnorderedListOutlined />}
               title={label}
-              style = {{
-                  marginLeft:'0px'
-              }}
             >
               {renderTreeView(children, selectedKey)}
             </SubMenu>
@@ -114,6 +113,9 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
         pickNotDeprecated(meta?.parent, options?.parent, parentName) !==
           undefined && children.length === 0
       );
+
+      const linkStyle: React.CSSProperties =
+        activeItemDisabled && isSelected ? { pointerEvents: "none" } : {};
 
       return (
         <CanAccess
@@ -127,12 +129,12 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
           <Menu.Item
             key={item.key}
             icon={icon ?? (isRoute && <UnorderedListOutlined />)}
-            style = {{
-                marginLeft:'0px'
-            }}
+            style={linkStyle}
           >
-            <Link to={route ?? ""}>{label}</Link>
-            {!drawerSiderVisible && isSelected && (
+            <Link to={route ?? ""} style={linkStyle}>
+              {label}
+            </Link>
+            {!siderCollapsed && isSelected && (
               <div className="ant-menu-tree-arrow" />
             )}
           </Menu.Item>
@@ -164,9 +166,6 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
       key="logout"
       onClick={() => handleLogout()}
       icon={<LogoutOutlined />}
-      style = {{
-          marginLeft:'0px'
-      }}
     >
       {translate("buttons.logout", "Logout")}
     </Menu.Item>
@@ -175,7 +174,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
   const dashboard = hasDashboard ? (
     <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
       <Link to="/">{translate("dashboard.title", "Dashboard")}</Link>
-      {!drawerSiderVisible && selectedKey === "/" && (
+      {!siderCollapsed && selectedKey === "/" && (
         <div className="ant-menu-tree-arrow" />
       )}
     </Menu.Item>
@@ -189,7 +188,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
         dashboard,
         items,
         logout,
-        collapsed: drawerSiderVisible,
+        collapsed: siderCollapsed,
       });
     }
     return (
@@ -203,26 +202,22 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
 
   const renderMenu = () => {
     return (
-      <>
-        <Menu
-          theme="dark"
-          selectedKeys={selectedKey ? [selectedKey] : []}
-          defaultOpenKeys={defaultOpenKeys}
-          mode="inline"
-          style={{
-            marginTop: "8px",
-            border: "none",
-          }}
-          onClick={() => {
-            setSiderVisible?.(false);
-            if (!breakpoint.lg) {
-              setDrawerSiderVisible?.(true);
-            }
-          }}
-        >
-          {renderSider()}
-        </Menu>
-      </>
+      <Menu
+        selectedKeys={selectedKey ? [selectedKey] : []}
+        defaultOpenKeys={defaultOpenKeys}
+        mode="inline"
+        style={{
+          paddingTop: "8px",
+          border: "none",
+          overflow: "auto",
+          height: "calc(100% - 72px)",
+        }}
+        onClick={() => {
+          setMobileSiderOpen(false);
+        }}
+      >
+        {renderSider()}
+      </Menu>
     );
   };
 
@@ -230,38 +225,35 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
     return (
       <>
         <Drawer
-          open={siderVisible}
-          onClose={() => setSiderVisible?.(false)}
+          open={mobileSiderOpen}
+          onClose={() => setMobileSiderOpen(false)}
           placement="left"
           closable={false}
-          width={200}
+          width={256}
           bodyStyle={{
             padding: 0,
           }}
           maskClosable={true}
         >
           <Layout>
-            {/*  */}
             <Layout.Sider
+              width={500}
               style={{
                 height: "100vh",
-                overflow: "hidden",
-                backgroundColor:"#001529",
-                borderRight: `1px solid "#001529"`,
-                //backgroundColor: token.colorBgContainer,
-                //borderRight: `1px solid ${token.colorBgElevated}`,
+                backgroundColor: token.colorBgContainer,
+                borderRight: `1px solid ${token.colorBgElevated}`,
               }}
             >
               <div
                 style={{
-                  width: "200px",
+                  width: "256px",
                   padding: "0 16px",
                   display: "flex",
                   justifyContent: "flex-start",
                   alignItems: "center",
                   height: "64px",
-                  backgroundColor: "#001529",
-                  //backgroundColor: token.colorBgElevated,
+                  backgroundColor: token.colorBgElevated,
+                  borderBottom: `1px solid ${token.colorBorder}`,
                 }}
               >
                 <RenderToTitle collapsed={false} />
@@ -273,9 +265,8 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
         <Button
           style={drawerButtonStyles}
           size="large"
-          onClick={() => setSiderVisible?.(true)}
+          onClick={() => setMobileSiderOpen(true)}
           icon={<BarsOutlined />}
-
         ></Button>
       </>
     );
@@ -285,65 +276,83 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
     return renderDrawerSider();
   }
 
+  const siderStyles: React.CSSProperties = {
+    backgroundColor: token.colorBgContainer,
+    borderRight: `1px solid ${token.colorBgElevated}`,
+  };
+
+  if (fixed) {
+    siderStyles.position = "fixed";
+    siderStyles.top = 0;
+    siderStyles.height = "100vh";
+    siderStyles.zIndex = 999;
+  }
+
   return (
-    <Layout.Sider
-      style={{
-        backgroundColor: "#001529",
-        borderRight: `1px solid "#001529"`,
-        //backgroundColor: token.colorBgContainer,
-        //borderRight: `1px solid ${token.colorBgElevated}`,
-      }}
-      collapsible
-      collapsed={drawerSiderVisible}
-      onCollapse={(collapsed) => setDrawerSiderVisible?.(collapsed)}
-      collapsedWidth={80}
-      breakpoint="lg"
-      trigger={
-        <Button
-          type="text"
+    <>
+      {fixed && (
+        <div
           style={{
-            borderRadius: 0,
-            height: "100%",
-            width: "100%",
-            //backgroundColor: "#05345e",
-            //backgroundColor: token.colorBgElevated,
+            width: siderCollapsed ? "80px" : "256px",
+            transition: "all 0.2s",
+          }}
+        />
+      )}
+      <Layout.Sider
+        style={siderStyles}
+        width={256}
+        collapsible
+        collapsed={siderCollapsed}
+        onCollapse={(collapsed, type) => {
+          if (type === "clickTrigger") {
+            setSiderCollapsed(collapsed);
+          }
+        }}
+        collapsedWidth={80}
+        breakpoint="lg"
+        trigger={
+          <Button
+            type="text"
+            style={{
+              borderRadius: 0,
+              height: "100%",
+              width: "100%",
+              backgroundColor: token.colorBgElevated,
+            }}
+          >
+            {siderCollapsed ? (
+              <RightOutlined
+                style={{
+                  color: token.colorPrimary,
+                }}
+              />
+            ) : (
+              <LeftOutlined
+                style={{
+                  color: token.colorPrimary,
+                }}
+              />
+            )}
+          </Button>
+        }
+      >
+        <div
+          style={{
+            width: siderCollapsed ? "80px" : "256px",
+            padding: siderCollapsed ? "0" : "0 16px",
+            display: "flex",
+            justifyContent: siderCollapsed ? "center" : "flex-start",
+            alignItems: "center",
+            height: "64px",
+            backgroundColor: token.colorBgElevated,
+            fontSize: "14px",
+            borderBottom: `1px solid ${token.colorBorder}`,
           }}
         >
-          {drawerSiderVisible ? (
-            <RightOutlined
-              style={{
-                //color: token.colorPrimary,
-                  color: token.colorWhite,
-              }}
-            />
-          ) : (
-            <LeftOutlined
-              style={{
-                //color: token.colorPrimary,
-                color: token.colorWhite,
-              }}
-            />
-          )}
-        </Button>
-      }
-    >
-      <div
-        style={{
-          width: drawerSiderVisible ? "80px" : "200px",
-          padding: drawerSiderVisible ? "0" : "0 0px",
-          display: "flex",
-          justifyContent: drawerSiderVisible ? "center" : "flex-start",
-          alignItems: "center",
-          height: "64px",
-          backgroundColor: "#001529",
-          //backgroundColor: token.colorBgElevated,
-          fontSize: "14px",
-
-        }}
-      >
-        <RenderToTitle collapsed={drawerSiderVisible} />
-      </div>
-      {renderMenu()}
-    </Layout.Sider>
+          <RenderToTitle collapsed={siderCollapsed} />
+        </div>
+        {renderMenu()}
+      </Layout.Sider>
+    </>
   );
 };

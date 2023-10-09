@@ -1,7 +1,9 @@
 import { Authenticated, Refine } from "@refinedev/core";
+import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
   ErrorComponent,
+  ThemedLayoutV2,
   notificationProvider,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
@@ -18,7 +20,7 @@ import { ColorModeContextProvider } from "./contexts/color-mode";
 import {ThemedHeaderV2} from "./components/themedLayout/header";
 import {ThemedSiderV2} from "./components/themedLayout/sider";
 import {ThemedTitleV2} from "./components/themedLayout/title";
-import {ThemedLayoutV2} from "./components/themedLayout";
+//import {ThemedLayoutV2} from "./components/themedLayout";
 import {API_URL, TOKEN_KEY} from "./constants";
 import axios, {AxiosRequestConfig} from "axios";
 import {AuthPage} from "./pages/auth";
@@ -58,6 +60,7 @@ function App() {
     <BrowserRouter>
       <RefineKbarProvider>
         <ColorModeContextProvider>
+        <DevtoolsProvider>
           <Refine
             //dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
             dataProvider={dataProvider(API_URL, axiosInstance)}
@@ -140,12 +143,14 @@ function App() {
                     <ThemedLayoutV2
                       Header={ThemedHeaderV2}
                       Sider={ThemedSiderV2}
-                      Title={({ collapsed }) => (
+                      Title={
+                        ({ collapsed }) => (
                         <ThemedTitleV2
                           collapsed={collapsed}
-                          text="GR@pp"
+                          text="GRC@pp"
                         />
-                      )}
+                      )
+                    }
                     >
                       <Outlet />
                     </ThemedLayoutV2>
@@ -199,12 +204,13 @@ function App() {
                   <Authenticated>
                     <ThemedLayoutV2
                       Header={ThemedHeaderV2}
+                      Sider={ThemedSiderV2}
                       Title={({ collapsed }) => (
-                        <ThemedTitleV2
+                         <ThemedTitleV2
                           collapsed={collapsed}
                           text="GR@pp"
-                        />
-                      )}
+                         />
+                       )}
                     >
                       <Outlet />
                     </ThemedLayoutV2>
@@ -218,6 +224,8 @@ function App() {
             <RefineKbar />
             <UnsavedChangesNotifier />
           </Refine>
+          <DevtoolsPanel />
+          </DevtoolsProvider>
         </ColorModeContextProvider>
       </RefineKbarProvider>
     </BrowserRouter>
