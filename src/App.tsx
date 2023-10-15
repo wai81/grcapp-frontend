@@ -25,7 +25,7 @@ import {API_URL, TOKEN_KEY} from "./constants";
 import axios, {AxiosRequestConfig} from "axios";
 import {AuthPage} from "./pages/auth";
 import {dataProvider} from "./providers/data-provider";
-import {CalendarOutlined, CarFilled, SettingOutlined} from "@ant-design/icons";
+import {CarFilled, SettingOutlined} from "@ant-design/icons";
 import {BookingTransportList} from "./pages/booking_transports";
 import {TransportList} from "./pages/transports";
 
@@ -208,7 +208,7 @@ function App() {
                       Title={({ collapsed }) => (
                          <ThemedTitleV2
                           collapsed={collapsed}
-                          text="GR@pp"
+                          text="GRC@pp"
                          />
                        )}
                     >

@@ -203,6 +203,7 @@ export const ThemedSiderV2: React.FC<RefineThemedLayoutV2SiderProps> = ({
   const renderMenu = () => {
     return (
       <Menu
+        //theme="dark"
         selectedKeys={selectedKey ? [selectedKey] : []}
         defaultOpenKeys={defaultOpenKeys}
         mode="inline"

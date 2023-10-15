@@ -9,7 +9,6 @@ import {
   useTranslate,
   useRouterContext,
 } from "@refinedev/core";
-import { ThemedTitle } from "@refinedev/antd";
 import {
   bodyStyles,
   containerStyles,
@@ -84,10 +83,13 @@ export const LoginPage: React.FC<LoginProps> = ({
                 display: "flex",
                 justifyContent: "center",
                 marginBottom: "32px",
-                fontSize: "20px",
+                fontSize: "28px",
+                
               }}
           >
-            {title ?? <ThemedTitleV2 collapsed={false} />}
+            {title 
+            ?? <ThemedTitleV2 collapsed={false} isLoginPage={true}/>
+            }
           </div>
       );
 
@@ -176,7 +178,7 @@ export const LoginPage: React.FC<LoginProps> = ({
                 {
                   type: "string",
                   message: translate(
-                      "pages.login.errors.username",
+                      "pages.login.errors.validUername",
                       "Invalid username"
                   ),
                 },

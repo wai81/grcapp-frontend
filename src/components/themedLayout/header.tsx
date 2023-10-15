@@ -53,7 +53,7 @@ export const ThemedHeaderV2: React.FC<RefineThemedLayoutV2HeaderProps> = () => {
 
   return (
     <AntdLayout.Header
-      style={{
+        style={{
         backgroundColor: token.colorBgElevated,
         display: "flex",
         justifyContent: "flex-end",
